@@ -16,6 +16,8 @@ funnel_mapping as (
 
 ),
 
+-- which activity types count as sales calls comes from the mapping seed,
+-- not hardcoded here (currently meeting and sc_2)
 sales_call_types as (
 
     select
@@ -34,6 +36,7 @@ final as (
         activity.user_id                    as user_id,
         activity.activity_type_key          as activity_type_key,
         activity_types.activity_type_name   as activity_type_name,
+        -- due date is the best available call date (no completion time in source)
         activity.due_at                     as called_at
     from activity
     inner join sales_call_types

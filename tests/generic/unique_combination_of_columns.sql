@@ -1,3 +1,4 @@
+{#- Grain test: fails on any combination of the given columns that appears more than once. -#}
 {% test unique_combination_of_columns(model, combination_of_columns) %}
 
 select

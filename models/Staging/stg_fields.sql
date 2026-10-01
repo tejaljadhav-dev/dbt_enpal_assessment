@@ -6,11 +6,14 @@ with source as (
 
 unnested as (
 
-    -- left join keeps fields without options (add_time, user_id) as one row
+    -- field_value_options is a JSON array of {"id", "label"} objects;
+    -- expand it to one row per option. The left join keeps fields without
+    -- options (add_time, user_id) as a single row with null option columns.
     select
         source.id               as field_id,
         source.field_key        as field_key,
         source.name             as field_name,
+        -- text, to match deal_changes.new_value
         option ->> 'id'         as option_id,
         option ->> 'label'      as option_label
     from source

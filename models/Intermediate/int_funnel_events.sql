@@ -16,6 +16,7 @@ funnel_mapping as (
 
 ),
 
+-- steps 1-9: the deal moving into the mapped stage
 stage_events as (
 
     select
@@ -28,10 +29,14 @@ stage_events as (
     from stage_history
     inner join funnel_mapping
         on funnel_mapping.source_type = 'stage'
+        -- source_key is text because it also holds activity type keys
         and funnel_mapping.source_key = cast(stage_history.stage_id as varchar)
 
 ),
 
+-- steps 2.1 and 3.1: a completed sales call of the mapped activity type.
+-- Most activity deal_ids are not in deal_changes, so these are not tied to
+-- the stage history.
 sales_call_events as (
 
     select
@@ -56,6 +61,8 @@ all_events as (
 
 ),
 
+-- order each deal's entries into a step by time; source_event_id breaks ties
+-- so the result is deterministic
 ranked as (
 
     select
@@ -70,7 +77,8 @@ ranked as (
 
 final as (
 
-    -- a deal counts as entering a step once: at its first entry
+    -- a deal counts as entering a step once, at its first entry, so re-entries
+    -- and repeated calls do not inflate the funnel
     select
         deal_id                         as deal_id,
         funnel_step                     as funnel_step,

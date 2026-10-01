@@ -8,8 +8,10 @@ renamed as (
 
     select
         id                      as activity_type_id,
+        -- join key to activity.type (e.g. meeting = "Sales Call 1", sc_2 = "Sales Call 2")
         type                    as activity_type_key,
         name                    as activity_type_name,
+        -- source stores 'Yes' / 'No' as text
         active = 'Yes'          as is_active
     from source
 

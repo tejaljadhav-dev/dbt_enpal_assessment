@@ -10,6 +10,7 @@ stages as (
 
 ),
 
+-- keep only stage moves; each one is the deal entering a stage
 stage_changes as (
 
     select
@@ -30,10 +31,14 @@ final as (
         stage_changes.stage_id          as stage_id,
         stages.stage_name               as stage_name,
         stage_changes.entered_at        as entered_at,
+        -- stage the deal came from; null for its first stage. Lets consumers
+        -- spot skips (4 -> 6) and backward moves.
         lag(stage_changes.stage_id) over (
             partition by stage_changes.deal_id
             order by stage_changes.entered_at
         )                               as previous_stage_id,
+        -- 1 = first time the deal entered this stage, 2+ = re-entry
+        -- (only happens in the five deal_ids that carry two lifecycles)
         row_number() over (
             partition by stage_changes.deal_id, stage_changes.stage_id
             order by stage_changes.entered_at

@@ -15,6 +15,7 @@ renamed as (
         type                    as activity_type_key,
         assigned_to_user        as user_id,
         done                    as is_done,
+        -- the only activity timestamp in the source; there is no completion time
         due_to                  as due_at
     from source
 
