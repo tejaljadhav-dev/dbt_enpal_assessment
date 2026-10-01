@@ -1,0 +1,16 @@
+version: 2
+
+models:
+  - name: stg_activity_types
+    description: "Activity type reference. Grain: one row per activity type."
+    columns:
+      - name: activity_type_id
+        data_tests: [unique, not_null]
+      - name: activity_type_key
+        description: Key used in activity.type (meeting, sc_2, follow_up, after_close_call).
+        data_tests: [unique, not_null]
+      - name: activity_type_name
+        description: Display name, e.g. "Sales Call 1".
+        data_tests: [not_null]
+      - name: is_active
+        description: True when the source `active` flag is 'Yes'. Follow Up Call is inactive but still has activities.

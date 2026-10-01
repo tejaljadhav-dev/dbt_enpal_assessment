@@ -1,0 +1,29 @@
+version: 2
+
+models:
+  - name: stg_deal_changes
+    description: >
+      Cleaned deal field-change log. Grain: one row per deal field change
+      (deal_id + changed_at + changed_field_key). `new_value` stays text
+      because its meaning depends on `changed_field_key`; downstream models
+      cast it per key.
+    columns:
+      - name: deal_change_id
+        description: Deterministic surrogate key over (deal_id, changed_at, changed_field_key).
+        data_tests: [unique, not_null]
+      - name: deal_id
+        description: Pipedrive deal id. The only deal identifier available (no deals table).
+        data_tests: [not_null]
+      - name: changed_at
+        description: Timestamp of the field change.
+        data_tests: [not_null]
+      - name: changed_field_key
+        description: Field that changed; described in stg_fields.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_fields')
+                field: field_key
+      - name: new_value
+        description: Value after the change, as text.

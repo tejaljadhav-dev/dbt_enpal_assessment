@@ -1,0 +1,42 @@
+version: 2
+
+models:
+  - name: stg_activity
+    description: >
+      Cleaned Pipedrive activities. Grain: one row per source activity row.
+      `activity_id` is not unique in the source (11 ids reused across
+      unrelated rows), so `activity_key` is the row identifier.
+      No relationship test to deals: only 8 activity deal_ids exist in
+      deal_changes, so it would fail on almost every row.
+    columns:
+      - name: activity_key
+        description: Deterministic surrogate key over (activity_id, deal_id, activity_type_key).
+        data_tests: [unique, not_null]
+      - name: activity_id
+        description: Pipedrive activity id (not unique; see model description).
+        data_tests: [not_null]
+      - name: deal_id
+        description: Deal the activity belongs to.
+        data_tests: [not_null]
+      - name: activity_type_key
+        description: Activity type key, e.g. `meeting` (Sales Call 1) or `sc_2` (Sales Call 2).
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_activity_types')
+                field: activity_type_key
+      - name: user_id
+        description: User the activity is assigned to.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_users')
+                field: user_id
+      - name: is_done
+        description: Whether the activity was marked done.
+        data_tests: [not_null]
+      - name: due_at
+        description: Activity due timestamp. The only activity timestamp in the source (no completion time).
+        data_tests: [not_null]

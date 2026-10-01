@@ -1,0 +1,33 @@
+version: 2
+
+models:
+  - name: int_deal_stage_history
+    description: >
+      Stage history of every deal, built from `stage_id` changes in
+      deal_changes. Grain: one row per deal entering a stage (every stage
+      change event, including repeats). Deals often skip stages (e.g. 4 -> 6);
+      skipped stages are not backfilled. Backward and repeated moves exist
+      only in five deal_ids that carry two lifecycles.
+    columns:
+      - name: deal_change_id
+        description: Key of the underlying stg_deal_changes row.
+        data_tests: [unique, not_null]
+      - name: deal_id
+        data_tests: [not_null]
+      - name: stage_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_stages')
+                field: stage_id
+      - name: stage_name
+        description: Pipedrive stage name.
+      - name: entered_at
+        description: Timestamp the deal moved into this stage.
+        data_tests: [not_null]
+      - name: previous_stage_id
+        description: Stage the deal was in before this change; null for the deal's first stage.
+      - name: stage_entry_number
+        description: 1 for the first time the deal entered this stage, 2 for a re-entry, etc.
+        data_tests: [not_null]

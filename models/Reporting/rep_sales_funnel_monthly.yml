@@ -1,0 +1,38 @@
+version: 2
+
+models:
+  - name: rep_sales_funnel_monthly
+    description: >
+      Monthly sales funnel. Grain: one row per month, KPI and funnel step.
+      `deals_count` is the number of distinct deals that entered the step for
+      the first time in that month (see int_funnel_events for the rules).
+      Months in which no deal entered a step have no row, rather than a zero.
+    columns:
+      - name: month
+        description: First day of the calendar month of the entry event.
+        data_tests: [not_null]
+      - name: kpi_name
+        description: Funnel step name, e.g. "Qualified Lead", "Sales Call 1".
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('funnel_step_mapping')
+                field: kpi_name
+      - name: funnel_step
+        description: Funnel step label ('1', '2', '2.1', '3', '3.1', '4' ... '9').
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('funnel_step_mapping')
+                field: funnel_step
+      - name: deals_count
+        description: Distinct deals that entered the step in the month.
+        data_tests:
+          - not_null
+          - not_negative
+    data_tests:
+      - unique_combination_of_columns:
+          arguments:
+            combination_of_columns: ['month', 'funnel_step']

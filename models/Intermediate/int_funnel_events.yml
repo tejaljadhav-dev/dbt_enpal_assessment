@@ -1,0 +1,54 @@
+version: 2
+
+models:
+  - name: int_funnel_events
+    description: >
+      Funnel entry events. Grain: one row per deal per funnel step, dated at
+      the deal's FIRST entry into that step.
+
+      Sources:
+        - Steps 1-9 come from stage changes (int_deal_stage_history), matched
+          via funnel_step_mapping on stage_id. Lead Generation uses the stage 1
+          change, not the deal's add_time.
+        - Steps 2.1 and 3.1 come from completed sales calls (int_sales_calls).
+
+      Rules:
+        - Re-entries (only in five deal_ids with two lifecycles) and repeated
+          calls are collapsed to the first entry, so a deal is counted once
+          per step.
+        - Skipped stages are not inferred: a deal moving 4 -> 6 never entered 5.
+        - Moving to a later stage counts regardless of a later lost_reason
+          (every deal in the extract has one).
+        - Sales-call deal_ids almost never appear in deal_changes (8 overlaps),
+          so the call steps are counted on their own and are not required to
+          sit between stage entries.
+    columns:
+      - name: deal_id
+        data_tests: [not_null]
+      - name: funnel_step
+        description: Funnel step label ('1', '2', '2.1', ... '9').
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('funnel_step_mapping')
+                field: funnel_step
+      - name: kpi_name
+        data_tests: [not_null]
+      - name: event_at
+        description: Timestamp the deal first entered the step.
+        data_tests: [not_null]
+      - name: event_type
+        description: stage_change or activity.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['stage_change', 'activity']
+      - name: source_event_id
+        description: deal_change_id (stage_change) or activity_key (activity) of the source event.
+        data_tests: [unique, not_null]
+    data_tests:
+      - unique_combination_of_columns:
+          arguments:
+            combination_of_columns: ['deal_id', 'funnel_step']

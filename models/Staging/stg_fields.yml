@@ -1,0 +1,19 @@
+version: 2
+
+models:
+  - name: stg_fields
+    description: >
+      Deal field metadata. Grain: one row per deal field. All four fields
+      belong to the deal entity and correspond 1:1 to deal_changes.changed_field_key.
+      `field_id` is a stable Pipedrive id and `field_key` is also unique, so no
+      warehouse surrogate key is needed.
+    columns:
+      - name: field_id
+        data_tests: [unique, not_null]
+      - name: field_key
+        description: API key of the field (add_time, user_id, stage_id, lost_reason).
+        data_tests: [unique, not_null]
+      - name: field_name
+        description: Display name, e.g. "Stage", "Lost reason".
+      - name: field_value_options
+        description: JSONB array of {id, label} options for enum fields; null otherwise.

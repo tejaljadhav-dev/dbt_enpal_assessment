@@ -1,0 +1,12 @@
+version: 2
+
+models:
+  - name: stg_users
+    description: "CRM users. Grain: one row per user. Email is not unique (4 duplicates), so it is not a key."
+    columns:
+      - name: user_id
+        data_tests: [unique, not_null]
+      - name: user_name
+      - name: email
+      - name: modified_at
+        description: Last modification timestamp of the user record.

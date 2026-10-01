@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: stg_stages
+    description: "Pipeline stages. Grain: one row per stage (single pipeline, stages 1-9)."
+    columns:
+      - name: stage_id
+        data_tests: [unique, not_null]
+      - name: stage_name
+        description: Stage name as spelled in Pipedrive (e.g. "Qualified lead").
+        data_tests: [not_null]

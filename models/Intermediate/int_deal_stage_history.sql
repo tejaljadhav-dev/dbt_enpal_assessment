@@ -1,0 +1,29 @@
+with stage_changes as (
+
+    select
+        deal_change_id,
+        deal_id,
+        cast(new_value as integer) as stage_id,
+        changed_at as entered_at
+    from {{ ref('stg_deal_changes') }}
+    where changed_field_key = 'stage_id'
+
+)
+
+select
+    stage_changes.deal_change_id,
+    stage_changes.deal_id,
+    stage_changes.stage_id,
+    stages.stage_name,
+    stage_changes.entered_at,
+    lag(stage_changes.stage_id) over (
+        partition by stage_changes.deal_id
+        order by stage_changes.entered_at
+    ) as previous_stage_id,
+    row_number() over (
+        partition by stage_changes.deal_id, stage_changes.stage_id
+        order by stage_changes.entered_at
+    ) as stage_entry_number
+from stage_changes
+left join {{ ref('stg_stages') }} as stages
+    on stage_changes.stage_id = stages.stage_id
