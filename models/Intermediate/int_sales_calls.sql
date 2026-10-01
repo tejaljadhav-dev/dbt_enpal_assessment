@@ -18,7 +18,8 @@ funnel_mapping as (
 
 sales_call_types as (
 
-    select source_key as activity_type_key
+    select
+        source_key                      as activity_type_key
     from funnel_mapping
     where source_type = 'activity'
 
@@ -27,13 +28,13 @@ sales_call_types as (
 final as (
 
     select
-        activity.activity_key,
-        activity.activity_id,
-        activity.deal_id,
-        activity.user_id,
-        activity.activity_type_key,
-        activity_types.activity_type_name,
-        activity.due_at as called_at
+        activity.activity_key               as activity_key,
+        activity.activity_id                as activity_id,
+        activity.deal_id                    as deal_id,
+        activity.user_id                    as user_id,
+        activity.activity_type_key          as activity_type_key,
+        activity_types.activity_type_name   as activity_type_name,
+        activity.due_at                     as called_at
     from activity
     inner join sales_call_types
         on activity.activity_type_key = sales_call_types.activity_type_key

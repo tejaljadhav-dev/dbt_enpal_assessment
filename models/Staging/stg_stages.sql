@@ -7,8 +7,8 @@ with source as (
 renamed as (
 
     select
-        stage_id,
-        stage_name
+        stage_id                as stage_id,
+        stage_name              as stage_name
     from source
 
 ),

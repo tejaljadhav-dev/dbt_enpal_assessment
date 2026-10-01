@@ -7,10 +7,10 @@ with source as (
 renamed as (
 
     select
-        id as user_id,
-        name as user_name,
-        email,
-        modified as modified_at
+        id                      as user_id,
+        name                    as user_name,
+        email                   as email,
+        modified                as modified_at
     from source
 
 ),
