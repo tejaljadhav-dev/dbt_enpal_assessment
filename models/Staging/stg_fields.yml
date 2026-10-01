@@ -3,17 +3,31 @@ version: 2
 models:
   - name: stg_fields
     description: >
-      Deal field metadata. Grain: one row per deal field. All four fields
-      belong to the deal entity and correspond 1:1 to deal_changes.changed_field_key.
-      `field_id` is a stable Pipedrive id and `field_key` is also unique, so no
-      warehouse surrogate key is needed.
+      Deal field metadata with option lists expanded from the source
+      field_value_options JSON. Grain: one row per field option
+      (field_key + option_id). Fields without options (add_time, user_id)
+      have a single row with null option columns. All fields belong to the
+      deal entity and match deal_changes.changed_field_key; option_id matches
+      deal_changes.new_value for enum fields (stage_id, lost_reason).
+      field_id and field_key repeat across option rows, and option ids restart
+      at 1 for every field, so field_option_id is the row key.
     columns:
-      - name: field_id
+      - name: field_option_id
+        description: Deterministic surrogate key over (field_key, option_id).
         data_tests: [unique, not_null]
+      - name: field_id
+        description: Pipedrive field id (repeats once per option).
+        data_tests: [not_null]
       - name: field_key
         description: API key of the field (add_time, user_id, stage_id, lost_reason).
-        data_tests: [unique, not_null]
+        data_tests: [not_null]
       - name: field_name
         description: Display name, e.g. "Stage", "Lost reason".
-      - name: field_value_options
-        description: JSONB array of {id, label} options for enum fields; null otherwise.
+      - name: option_id
+        description: Option id as stored in deal_changes.new_value; null for fields without options.
+      - name: option_label
+        description: Option display label, e.g. "Pricing Issues"; null for fields without options.
+    data_tests:
+      - unique_combination_of_columns:
+          arguments:
+            combination_of_columns: ['field_key', 'option_id']
