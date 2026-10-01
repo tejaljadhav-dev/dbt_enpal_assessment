@@ -1,0 +1,34 @@
+version: 2
+
+models:
+  - name: stg_field_options
+    description: >
+      Option lists of enum deal fields, unnested from fields.field_value_options.
+      Grain: one row per field option (field_key + option_id). Only stage_id and
+      lost_reason have options. Option ids repeat across fields (both start at
+      "1"), so field_option_id is a deterministic surrogate key over
+      (field_key, option_id). Use it to decode deal_changes.new_value, e.g. lost reasons.
+    columns:
+      - name: field_option_id
+        description: Deterministic surrogate key over (field_key, option_id).
+        data_tests: [unique, not_null]
+      - name: field_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_fields')
+                field: field_id
+      - name: field_key
+        description: Field the option belongs to (stage_id or lost_reason).
+        data_tests: [not_null]
+      - name: option_id
+        description: Option id as stored in deal_changes.new_value (text).
+        data_tests: [not_null]
+      - name: option_label
+        description: Option display label, e.g. "Pricing Issues".
+        data_tests: [not_null]
+    data_tests:
+      - unique_combination_of_columns:
+          arguments:
+            combination_of_columns: ['field_key', 'option_id']
