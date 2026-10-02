@@ -1,5 +1,9 @@
 version: 2
 
+# Sources are documented here but tested in staging: every staging model is a
+# 1:1 rename of its source, so testing both layers would raise two alerts for
+# one data issue.
+
 sources:
   - name: pipedrive
     description: >
@@ -20,23 +24,10 @@ sources:
           stage moves in the data come from those five deals.
         columns:
           - name: deal_id
-            data_tests:
-              - not_null
           - name: change_time
-            data_tests:
-              - not_null
           - name: changed_field_key
-            data_tests:
-              - not_null
-              - accepted_values:
-                  arguments:
-                    values: ['add_time', 'user_id', 'stage_id', 'lost_reason']
           - name: new_value
             description: New field value as text (timestamp, user id, stage id or lost-reason option id).
-        data_tests:
-          - unique_combination_of_columns:
-              arguments:
-                combination_of_columns: ['deal_id', 'change_time', 'changed_field_key']
 
       - name: activity
         description: >
@@ -47,48 +38,22 @@ sources:
           stage history.
         columns:
           - name: activity_id
-            data_tests:
-              - not_null
           - name: type
             description: Activity type key; joins to `activity_types.type`.
-            data_tests:
-              - not_null
-              - relationships:
-                  arguments:
-                    to: source('pipedrive', 'activity_types')
-                    field: type
           - name: assigned_to_user
-            data_tests:
-              - relationships:
-                  arguments:
-                    to: source('pipedrive', 'users')
-                    field: id
           - name: deal_id
-            data_tests:
-              - not_null
           - name: done
           - name: due_to
             description: Due timestamp. The only activity timestamp available; there is no completion time.
 
       - name: activity_types
         description: "Activity type reference. Grain: one row per activity type."
-        columns:
-          - name: id
-            data_tests: [unique, not_null]
-          - name: type
-            data_tests: [unique, not_null]
 
       - name: stages
         description: "Pipeline stage reference. Grain: one row per stage (9 stages, one pipeline)."
-        columns:
-          - name: stage_id
-            data_tests: [unique, not_null]
 
       - name: users
         description: "CRM users (deal owners / activity assignees). Grain: one row per user. Emails are not unique."
-        columns:
-          - name: id
-            data_tests: [unique, not_null]
 
       - name: fields
         description: >
@@ -96,8 +61,3 @@ sources:
           exactly the keys tracked in `deal_changes.changed_field_key`.
           `field_value_options` (JSONB) holds option id/label pairs for
           enum fields (stage_id, lost_reason).
-        columns:
-          - name: id
-            data_tests: [unique, not_null]
-          - name: field_key
-            data_tests: [unique, not_null]

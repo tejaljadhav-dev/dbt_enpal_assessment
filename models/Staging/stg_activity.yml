@@ -11,15 +11,17 @@ models:
     columns:
       - name: activity_key
         description: Deterministic surrogate key over (activity_id, deal_id, activity_type_key).
-        data_tests: [unique, not_null]
+        # grain check; no not_null because the hash is never null
+        data_tests: [unique]
       - name: activity_id
         description: Pipedrive activity id (not unique; see model description).
-        data_tests: [not_null]
       - name: deal_id
         description: Deal the activity belongs to.
+        # deal ids are what the funnel counts
         data_tests: [not_null]
       - name: activity_type_key
         description: Activity type key, e.g. `meeting` (Sales Call 1) or `sc_2` (Sales Call 2).
+        # drives the sales-call mapping; an unknown type would silently drop calls
         data_tests:
           - not_null
           - relationships:
@@ -28,15 +30,17 @@ models:
                 field: activity_type_key
       - name: user_id
         description: User the activity is assigned to.
+        # a missing user changes no number, a wrong one breaks user slicing
         data_tests:
-          - not_null
           - relationships:
               arguments:
                 to: ref('stg_users')
                 field: user_id
       - name: is_done
         description: Whether the activity was marked done.
+        # null would silently drop the call from the funnel
         data_tests: [not_null]
       - name: due_at
         description: Activity due timestamp. The only activity timestamp in the source (no completion time).
+        # sets the reporting month of sales calls
         data_tests: [not_null]

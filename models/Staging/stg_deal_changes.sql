@@ -21,7 +21,7 @@ renamed as (
         deal_id                 as deal_id,
         change_time             as changed_at,
         changed_field_key       as changed_field_key,
-        -- kept as text: holds a timestamp, user id, stage id or lost-reason id
+        -- changed_field_key: kept as text: holds a timestamp, user id, stage id or lost-reason id
         -- depending on changed_field_key, so downstream models cast it per key
         new_value               as new_value
     from source

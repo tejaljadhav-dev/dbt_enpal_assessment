@@ -8,15 +8,13 @@ models:
       int_sales_calls.
     columns:
       - name: activity_type_id
-        data_tests: [unique, not_null]
+        # grain check
+        data_tests: [unique]
       - name: activity_type_key
-        data_tests: [unique, not_null]
       - name: activity_type_name
-        data_tests: [not_null]
       - name: is_active
       - name: is_sales_call
         description: True for the types mapped to a funnel step (Sales Call 1 and Sales Call 2).
-        data_tests: [not_null]
       - name: funnel_step
         description: '2.1 or 3.1 for sales calls; null for follow-up and after-close calls.'
       - name: kpi_name

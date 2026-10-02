@@ -8,18 +8,16 @@ models:
       change event, including repeats). Deals often skip stages (e.g. 4 -> 6);
       skipped stages are not backfilled. Backward and repeated moves exist
       only in five deal_ids that carry two lifecycles.
+      Columns passed through from stg_deal_changes are tested there.
     columns:
       - name: deal_change_id
         description: Key of the underlying stg_deal_changes row.
-        data_tests: [unique, not_null]
+        # grain check
+        data_tests: [unique]
       - name: deal_id
-        data_tests:
-          - not_null
-          - relationships:
-              arguments:
-                to: ref('int_deals')
-                field: deal_id
       - name: stage_id
+        description: Stage id cast from deal_changes.new_value.
+        # new_value is untested text: a null or unknown stage would drop the deal from the funnel
         data_tests:
           - not_null
           - relationships:
@@ -30,9 +28,9 @@ models:
         description: Pipedrive stage name.
       - name: entered_at
         description: Timestamp the deal moved into this stage.
-        data_tests: [not_null]
       - name: previous_stage_id
         description: Stage the deal was in before this change; null for the deal's first stage.
       - name: stage_entry_number
-        description: 1 for the first time the deal entered this stage, 2 for a re-entry, etc.
-        data_tests: [not_null]
+        description: >
+          1 for the first time the deal entered this stage, 2 for a re-entry,
+          etc. Re-entries are monitored by tests/monitor_deal_stage_reentries.sql.

@@ -10,17 +10,24 @@ models:
     columns:
       - name: deal_change_id
         description: Deterministic surrogate key over (deal_id, changed_at, changed_field_key).
-        data_tests: [unique, not_null]
+        # grain check; no not_null because the hash is never null
+        data_tests: [unique]
       - name: deal_id
         description: Pipedrive deal id. The only deal identifier available (no deals table).
+        # deal ids are what the funnel counts
         data_tests: [not_null]
       - name: changed_at
         description: Timestamp of the field change.
+        # sets the reporting month of stage entries
         data_tests: [not_null]
       - name: changed_field_key
         description: Field that changed; described in stg_fields.
+        # models filter on these keys; a new or unknown key should be noticed
         data_tests:
           - not_null
+          - accepted_values:
+              arguments:
+                values: ['add_time', 'user_id', 'stage_id', 'lost_reason']
           - relationships:
               arguments:
                 to: ref('stg_fields')

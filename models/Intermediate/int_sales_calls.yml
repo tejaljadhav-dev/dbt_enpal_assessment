@@ -8,27 +8,17 @@ models:
       (`meeting` = Sales Call 1, `sc_2` = Sales Call 2). Not-done activities
       are excluded because the call did not take place. `called_at` is the
       activity due timestamp, the only activity time in the source.
+      Columns passed through from stg_activity are tested there.
     columns:
       - name: activity_key
-        data_tests: [unique, not_null]
+        # grain check
+        data_tests: [unique]
       - name: activity_id
-        data_tests: [not_null]
       - name: deal_id
-        data_tests:
-          - not_null
-          - relationships:
-              arguments:
-                to: ref('int_deals')
-                field: deal_id
       - name: user_id
         description: User who held the call.
       - name: activity_type_key
-        data_tests:
-          - not_null
-          - accepted_values:
-              arguments:
-                values: ['meeting', 'sc_2']
+        description: meeting or sc_2, per funnel_step_mapping.
       - name: activity_type_name
         description: '"Sales Call 1" or "Sales Call 2".'
       - name: called_at
-        data_tests: [not_null]

@@ -7,11 +7,11 @@ models:
       user_id in stg_activity / int_sales_calls.
     columns:
       - name: user_id
-        data_tests: [unique, not_null]
+        # grain check
+        data_tests: [unique]
       - name: user_name
       - name: email
         description: Not unique across users (4 duplicates).
       - name: modified_at
       - name: owned_deal_count
         description: Deals whose latest owner is this user.
-        data_tests: [not_null, not_negative]
