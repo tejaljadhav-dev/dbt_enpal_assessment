@@ -13,7 +13,12 @@ models:
         description: Key of the underlying stg_deal_changes row.
         data_tests: [unique, not_null]
       - name: deal_id
-        data_tests: [not_null]
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('int_deals')
+                field: deal_id
       - name: stage_id
         data_tests:
           - not_null

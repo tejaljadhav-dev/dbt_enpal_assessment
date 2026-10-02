@@ -14,7 +14,12 @@ models:
       - name: activity_id
         data_tests: [not_null]
       - name: deal_id
-        data_tests: [not_null]
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('int_deals')
+                field: deal_id
       - name: user_id
         description: User who held the call.
       - name: activity_type_key

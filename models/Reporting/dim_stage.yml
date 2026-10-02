@@ -1,0 +1,20 @@
+version: 2
+
+models:
+  - name: dim_stage
+    description: >
+      Pipeline stages with their funnel step. Grain: one row per stage.
+      Joins to int_deal_stage_history.stage_id and int_deals.current_stage_id /
+      furthest_stage_id.
+    columns:
+      - name: stage_id
+        data_tests: [unique, not_null]
+      - name: stage_name
+        description: Stage name as spelled in Pipedrive.
+        data_tests: [not_null]
+      - name: funnel_step
+        description: Funnel step the stage maps to ('1' to '9').
+        data_tests: [unique, not_null]
+      - name: kpi_name
+        description: Funnel step name as used in rep_sales_funnel_monthly.
+        data_tests: [not_null]

@@ -24,7 +24,12 @@ models:
           sit between stage entries.
     columns:
       - name: deal_id
-        data_tests: [not_null]
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('int_deals')
+                field: deal_id
       - name: funnel_step
         description: Funnel step label ('1', '2', '2.1', ... '9').
         data_tests:

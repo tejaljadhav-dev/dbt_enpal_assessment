@@ -1,0 +1,56 @@
+version: 2
+
+models:
+  - name: int_deals
+    description: >
+      The deal entity, rebuilt from the change log because the extract has no
+      deals table. Grain: one row per deal_id seen in deal_changes or activity.
+      Deals present only in activity (the large majority of activity deal_ids)
+      have has_deal_history = false and null creation, owner, stage and
+      lost-reason attributes. "Current" attributes are the latest value of each
+      field in deal_changes. Every deal with history has a lost_reason, which
+      looks like an artifact of the extract, so it is not treated as a status.
+    columns:
+      - name: deal_id
+        data_tests: [unique, not_null]
+      - name: has_deal_history
+        description: True when the deal appears in deal_changes.
+        data_tests: [not_null]
+      - name: created_at
+        description: First add_time of the deal; null without deal history.
+      - name: lifecycle_count
+        description: Number of add_time events. 2 for the five deal_ids that carry two lifecycles, 0 without history.
+        data_tests: [not_null]
+      - name: owner_user_id
+        description: Latest owner (user_id field).
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_users')
+                field: user_id
+      - name: current_stage_id
+        description: Latest stage the deal moved into.
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_stages')
+                field: stage_id
+      - name: furthest_stage_id
+        description: Highest stage the deal ever entered.
+      - name: last_stage_changed_at
+        description: Timestamp of the deal's latest stage change.
+      - name: stage_reentry_count
+        description: Number of times the deal entered a stage it had already been in.
+        data_tests: [not_null, not_negative]
+      - name: lost_reason_id
+        description: Latest lost_reason option id (text, as in deal_changes).
+      - name: lost_reason
+        description: Lost reason label decoded through stg_fields.
+      - name: lost_at
+        description: Timestamp of the latest lost_reason change.
+      - name: activity_count
+        description: All activities linked to the deal.
+        data_tests: [not_null, not_negative]
+      - name: completed_sales_call_count
+        description: Completed Sales Call 1 / Sales Call 2 activities.
+        data_tests: [not_null, not_negative]
