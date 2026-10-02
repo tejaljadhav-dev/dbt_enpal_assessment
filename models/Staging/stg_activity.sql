@@ -7,11 +7,16 @@
     )
 }}
 
+------ Start: Import CTEs ------
 with source as (
 
     select * from {{ source('pipedrive', 'activity') }}
 
 ),
+
+------ End: Import CTEs ------
+
+------ Start: Logic CTEs ------
 
 renamed as (
 
@@ -35,5 +40,8 @@ final as (
     select * from renamed
 
 )
+------ End: Logic CTEs ------
+
+------ Start: Final CTE ------
 
 select * from final

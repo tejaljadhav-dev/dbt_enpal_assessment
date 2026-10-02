@@ -7,6 +7,7 @@
     )
 }}
 
+------ Start: Import CTEs ------
 with stage_history as (
 
     select * from {{ ref('int_deal_stage_history') }}
@@ -24,6 +25,10 @@ funnel_mapping as (
     select * from {{ ref('funnel_step_mapping') }}
 
 ),
+
+------ End: Import CTEs ------
+
+------ Start: Logic CTEs ------
 
 -- steps 1-9: the deal moving into the mapped stage
 stage_events as (
@@ -99,5 +104,8 @@ final as (
     where entry_rank = 1
 
 )
+------ End: Logic CTEs ------
+
+------ Start: Final CTE ------
 
 select * from final

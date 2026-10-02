@@ -7,6 +7,7 @@
     )
 }}
 
+------ Start: Import CTEs ------
 with funnel_events as (
 
     select * from {{ ref('int_funnel_events') }}
@@ -18,6 +19,10 @@ funnel_mapping as (
     select * from {{ ref('funnel_step_mapping') }}
 
 ),
+
+------ End: Import CTEs ------
+
+------ Start: Logic CTEs ------
 
 -- deals entering each funnel step per calendar month
 monthly_counts as (
@@ -84,5 +89,8 @@ final as (
         and month_step_grid.funnel_step = monthly_counts.funnel_step
 
 )
+------ End: Logic CTEs ------
+
+------ Start: Final CTE ------
 
 select * from final

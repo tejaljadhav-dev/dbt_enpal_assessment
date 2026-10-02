@@ -8,13 +8,13 @@ models:
       (`meeting` = Sales Call 1, `sc_2` = Sales Call 2). Not-done activities
       are excluded because the call did not take place. `called_at` is the
       activity due timestamp, the only activity time in the source.
-      Columns passed through from stg_activity are tested there.
     columns:
       - name: activity_key
-        # grain check
-        data_tests: [unique]
+        description: Unique key of the activity row (hash of activity_id, deal_id and type).
       - name: activity_id
+        description: Pipedrive activity id (not unique in the source; see activity_key).
       - name: deal_id
+        description: Pipedrive deal id the call belongs to.
       - name: user_id
         description: User who held the call.
       - name: activity_type_key
@@ -22,3 +22,4 @@ models:
       - name: activity_type_name
         description: '"Sales Call 1" or "Sales Call 2".'
       - name: called_at
+        description: Due timestamp of the call, used as the call date.

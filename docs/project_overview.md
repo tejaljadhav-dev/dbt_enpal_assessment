@@ -20,8 +20,8 @@ Connection (see `profiles.yml`): `localhost:5432`, database `postgres`, user and
 raw_data/             source CSVs, loaded into Postgres by docker-compose
 seeds/                funnel_step_mapping.csv: stages / activity types -> funnel steps
 macros/               generate_surrogate_key (deterministic md5 key)
-tests/generic/        unique_combination_of_columns, not_negative
-tests/                monitor_deal_stage_reentries (warn-only)
+tests/generic/        unique_combination_of_columns (grain test)
+tests/                assert_report_matches_raw_rebuild, monitor_deal_stage_reentries (warn-only)
 models/
   Staging/            views, one per raw table: rename, type, key (+ _sources.yml)
   Intermediate/       views, business logic
@@ -66,7 +66,7 @@ raw CSVs (public schema)
 
 ## Conventions
 
-- Every model: import CTEs, then logic CTEs, then `final`, ending with `select * from final`.
+- Every model: import CTEs, then logic CTEs, then `final`, ending with `select * from final`. Each section is wrapped in `------ Start/End ------` marker comments.
 - Every model starts with a `config()` block and a comment explaining its materialization.
 - Explicit, aligned `as` aliases on every column.
-- Tests guard results rather than every column: grain, inputs that drive counts, values read from raw text, and the seed. Each column is tested once, in staging.
+- Six significant tests only: key uniqueness on the two raw event tables, grain of `int_funnel_events` and the report, a reconciliation test that rebuilds the report from raw SQL, and a warn-only re-entry monitor.

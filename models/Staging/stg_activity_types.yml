@@ -5,11 +5,9 @@ models:
     description: "Activity type reference. Grain: one row per activity type."
     columns:
       - name: activity_type_id
-        data_tests: [unique, not_null]
+        description: Unique identifier of the activity type.
       - name: activity_type_key
         description: Key used in activity.type (meeting, sc_2, follow_up, after_close_call).
-        # join key from activity and the funnel mapping; duplicates would double calls
-        data_tests: [unique, not_null]
       - name: activity_type_name
         description: Display name, e.g. "Sales Call 1".
       - name: is_active

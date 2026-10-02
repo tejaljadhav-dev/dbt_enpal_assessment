@@ -6,6 +6,7 @@
     )
 }}
 
+------ Start: Import CTEs ------
 with activity as (
 
     select * from {{ ref('stg_activity') }}
@@ -23,6 +24,10 @@ funnel_mapping as (
     select * from {{ ref('funnel_step_mapping') }}
 
 ),
+
+------ End: Import CTEs ------
+
+------ Start: Logic CTEs ------
 
 -- which activity types count as sales calls comes from the mapping seed,
 -- not hardcoded here (currently meeting and sc_2)
@@ -55,5 +60,8 @@ final as (
     where activity.is_done
 
 )
+------ End: Logic CTEs ------
+
+------ Start: Final CTE ------
 
 select * from final

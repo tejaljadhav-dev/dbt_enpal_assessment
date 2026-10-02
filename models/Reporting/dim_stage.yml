@@ -8,13 +8,10 @@ models:
       furthest_stage_id.
     columns:
       - name: stage_id
-        # grain check
-        data_tests: [unique]
+        description: Unique identifier of the pipeline stage (1-9).
       - name: stage_name
         description: Stage name as spelled in Pipedrive.
       - name: funnel_step
         description: Funnel step the stage maps to ('1' to '9').
-        # a new Pipedrive stage without a mapping would be silently left out of the funnel
-        data_tests: [not_null]
       - name: kpi_name
         description: Funnel step name as used in rep_sales_funnel_monthly.

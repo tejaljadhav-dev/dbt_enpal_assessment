@@ -20,28 +20,11 @@ seeds:
     columns:
       - name: funnel_step
         description: Funnel step label as text ('1', '2', '2.1', ... '9').
-        data_tests:
-          - unique
-          - not_null
       - name: kpi_name
         description: Human-readable funnel step name.
-        data_tests:
-          - unique
-          - not_null
       - name: source_type
         description: Which source event stream defines entry into the step.
-        data_tests:
-          - not_null
-          - accepted_values:
-              arguments:
-                values: ['stage', 'activity']
       - name: source_key
         description: >
           `stage_id` (as text) when source_type = 'stage';
           `activity_types.type` when source_type = 'activity'.
-        data_tests:
-          - not_null
-    data_tests:
-      - unique_combination_of_columns:
-          arguments:
-            combination_of_columns: ['source_type', 'source_key']

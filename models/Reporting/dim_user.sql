@@ -6,6 +6,7 @@
     )
 }}
 
+------ Start: Import CTEs ------
 with users as (
 
     select * from {{ ref('stg_users') }}
@@ -17,6 +18,10 @@ deals as (
     select * from {{ ref('int_deals') }}
 
 ),
+
+------ End: Import CTEs ------
+
+------ Start: Logic CTEs ------
 
 -- how many deals each user currently owns, for workload / ownership slicing
 owned_deals as (
@@ -44,5 +49,8 @@ final as (
         on users.user_id = owned_deals.user_id
 
 )
+------ End: Logic CTEs ------
+
+------ Start: Final CTE ------
 
 select * from final

@@ -1,9 +1,5 @@
 version: 2
 
-# Sources are documented here but tested in staging: every staging model is a
-# 1:1 rename of its source, so testing both layers would raise two alerts for
-# one data issue.
-
 sources:
   - name: pipedrive
     description: >
@@ -24,8 +20,11 @@ sources:
           stage moves in the data come from those five deals.
         columns:
           - name: deal_id
+            description: Pipedrive deal id the change belongs to.
           - name: change_time
+            description: Timestamp of the field change.
           - name: changed_field_key
+            description: "Field that changed: add_time, user_id, stage_id or lost_reason."
           - name: new_value
             description: New field value as text (timestamp, user id, stage id or lost-reason option id).
 
@@ -38,11 +37,15 @@ sources:
           stage history.
         columns:
           - name: activity_id
+            description: "Pipedrive activity id. Not unique: 11 ids are reused by unrelated rows."
           - name: type
             description: Activity type key; joins to `activity_types.type`.
           - name: assigned_to_user
+            description: Id of the user the activity is assigned to; joins to users.id.
           - name: deal_id
+            description: Pipedrive deal id the activity belongs to.
           - name: done
+            description: True when the activity was marked as done.
           - name: due_to
             description: Due timestamp. The only activity timestamp available; there is no completion time.
 

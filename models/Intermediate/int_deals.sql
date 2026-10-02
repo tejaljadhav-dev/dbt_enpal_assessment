@@ -7,6 +7,7 @@
     )
 }}
 
+------ Start: Import CTEs ------
 with deal_changes as (
 
     select * from {{ ref('stg_deal_changes') }}
@@ -36,6 +37,10 @@ fields as (
     select * from {{ ref('stg_fields') }}
 
 ),
+
+------ End: Import CTEs ------
+
+------ Start: Logic CTEs ------
 
 activity_summary as (
 
@@ -172,5 +177,8 @@ final as (
         on current_state.lost_reason_id = lost_reasons.lost_reason_id
 
 )
+------ End: Logic CTEs ------
+
+------ Start: Final CTE ------
 
 select * from final

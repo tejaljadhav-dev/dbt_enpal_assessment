@@ -14,14 +14,10 @@ models:
     columns:
       - name: field_option_id
         description: Deterministic surrogate key over (field_key, option_id).
-        # grain check; no not_null because the hash is never null
-        data_tests: [unique]
       - name: field_id
         description: Pipedrive field id (repeats once per option).
       - name: field_key
         description: API key of the field (add_time, user_id, stage_id, lost_reason).
-        # target of the changed_field_key relationship test
-        data_tests: [not_null]
       - name: field_name
         description: Display name, e.g. "Stage", "Lost reason".
       - name: option_id

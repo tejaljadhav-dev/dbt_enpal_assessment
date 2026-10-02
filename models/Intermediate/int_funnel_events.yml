@@ -25,13 +25,13 @@ models:
           so the call steps are counted on their own and are not required to
           sit between stage entries.
 
-      Only the grain is tested here: every column comes from inner joins to
-      the mapping seed or from inputs already tested upstream.
     columns:
       - name: deal_id
+        description: Pipedrive deal id of the deal that entered the funnel step.
       - name: funnel_step
         description: Funnel step label ('1', '2', '2.1', ... '9').
       - name: kpi_name
+        description: Funnel step name from funnel_step_mapping, e.g. 'Qualified Lead'.
       - name: event_at
         description: Timestamp the deal first entered the step.
       - name: event_type
@@ -39,7 +39,7 @@ models:
       - name: source_event_id
         description: deal_change_id (stage_change) or activity_key (activity) of the source event.
     data_tests:
-      # the first-entry rule must leave exactly one row per deal and step
+      # grain: the first-entry rule must leave one row per deal and step
       - unique_combination_of_columns:
           arguments:
             combination_of_columns: ['deal_id', 'funnel_step']

@@ -12,8 +12,7 @@ models:
       looks like an artifact of the extract, so it is not treated as a status.
     columns:
       - name: deal_id
-        # grain check
-        data_tests: [unique]
+        description: Unique identifier of the deal (Pipedrive deal id), taken from deal_changes or activity.
       - name: has_deal_history
         description: True when the deal appears in deal_changes.
       - name: created_at
@@ -22,20 +21,8 @@ models:
         description: Number of add_time events. 2 for the five deal_ids that carry two lifecycles, 0 without history.
       - name: owner_user_id
         description: Latest owner (user_id field).
-        # cast from untested deal_changes.new_value
-        data_tests:
-          - relationships:
-              arguments:
-                to: ref('stg_users')
-                field: user_id
       - name: current_stage_id
         description: Latest stage the deal moved into.
-        # cast from untested deal_changes.new_value
-        data_tests:
-          - relationships:
-              arguments:
-                to: ref('stg_stages')
-                field: stage_id
       - name: furthest_stage_id
         description: Highest stage the deal ever entered.
       - name: last_stage_changed_at

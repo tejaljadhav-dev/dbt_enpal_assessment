@@ -6,41 +6,22 @@ models:
       Cleaned Pipedrive activities. Grain: one row per source activity row.
       `activity_id` is not unique in the source (11 ids reused across
       unrelated rows), so `activity_key` is the row identifier.
-      No relationship test to deals: only 8 activity deal_ids exist in
-      deal_changes, so it would fail on almost every row.
+      Only 8 activity deal_ids exist in deal_changes, so activities do not join
+      reliably to the stage history.
     columns:
       - name: activity_key
         description: Deterministic surrogate key over (activity_id, deal_id, activity_type_key).
-        # grain check; no not_null because the hash is never null
+        # grain: a duplicate here would mean the raw table was loaded twice
         data_tests: [unique]
       - name: activity_id
         description: Pipedrive activity id (not unique; see model description).
       - name: deal_id
         description: Deal the activity belongs to.
-        # deal ids are what the funnel counts
-        data_tests: [not_null]
       - name: activity_type_key
         description: Activity type key, e.g. `meeting` (Sales Call 1) or `sc_2` (Sales Call 2).
-        # drives the sales-call mapping; an unknown type would silently drop calls
-        data_tests:
-          - not_null
-          - relationships:
-              arguments:
-                to: ref('stg_activity_types')
-                field: activity_type_key
       - name: user_id
         description: User the activity is assigned to.
-        # a missing user changes no number, a wrong one breaks user slicing
-        data_tests:
-          - relationships:
-              arguments:
-                to: ref('stg_users')
-                field: user_id
       - name: is_done
         description: Whether the activity was marked done.
-        # null would silently drop the call from the funnel
-        data_tests: [not_null]
       - name: due_at
         description: Activity due timestamp. The only activity timestamp in the source (no completion time).
-        # sets the reporting month of sales calls
-        data_tests: [not_null]

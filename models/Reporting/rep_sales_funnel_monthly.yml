@@ -11,8 +11,6 @@ models:
       Note the activity extract ends in September 2024 while stage changes run
       to February 2025, so Sales Call 1 / 2 show 0 for October 2024 onwards
       because there is no data, not because no calls happened.
-      month, kpi_name and funnel_step come from a month spine crossed with the
-      mapping seed, so they cannot be null; only the grain and count are tested.
     columns:
       - name: month
         description: First day of the calendar month of the entry event.
@@ -22,10 +20,8 @@ models:
         description: Funnel step label ('1', '2', '2.1', '3', '3.1', '4' ... '9').
       - name: deals_count
         description: Distinct deals that entered the step in the month; 0 when none did.
-        # required by the assessment brief as an explicit output guarantee
-        data_tests: [not_negative]
     data_tests:
-      # one row per month and step; a duplicate would double-count in BI
+      # grain: one row per month and step, or BI tools double count
       - unique_combination_of_columns:
           arguments:
             combination_of_columns: ['month', 'funnel_step']

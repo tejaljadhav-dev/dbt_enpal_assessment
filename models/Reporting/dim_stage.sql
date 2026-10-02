@@ -6,6 +6,7 @@
     )
 }}
 
+------ Start: Import CTEs ------
 with stages as (
 
     select * from {{ ref('stg_stages') }}
@@ -17,6 +18,10 @@ funnel_mapping as (
     select * from {{ ref('funnel_step_mapping') }}
 
 ),
+
+------ End: Import CTEs ------
+
+------ Start: Logic CTEs ------
 
 stage_steps as (
 
@@ -44,5 +49,8 @@ final as (
         on cast(stages.stage_id as varchar) = stage_steps.source_key
 
 )
+------ End: Logic CTEs ------
+
+------ Start: Final CTE ------
 
 select * from final

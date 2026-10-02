@@ -6,11 +6,16 @@
     )
 }}
 
+------ Start: Import CTEs ------
 with source as (
 
     select * from {{ source('pipedrive', 'fields') }}
 
 ),
+
+------ End: Import CTEs ------
+
+------ Start: Logic CTEs ------
 
 unnested as (
 
@@ -43,5 +48,8 @@ final as (
     from unnested
 
 )
+------ End: Logic CTEs ------
+
+------ Start: Final CTE ------
 
 select * from final

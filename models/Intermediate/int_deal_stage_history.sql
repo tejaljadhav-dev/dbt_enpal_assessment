@@ -7,6 +7,7 @@
     )
 }}
 
+------ Start: Import CTEs ------
 with deal_changes as (
 
     select * from {{ ref('stg_deal_changes') }}
@@ -18,6 +19,10 @@ stages as (
     select * from {{ ref('stg_stages') }}
 
 ),
+
+------ End: Import CTEs ------
+
+------ Start: Logic CTEs ------
 
 -- keep only stage moves; each one is the deal entering a stage
 stage_changes as (
@@ -58,5 +63,8 @@ final as (
         on stage_changes.stage_id = stages.stage_id
 
 )
+------ End: Logic CTEs ------
+
+------ Start: Final CTE ------
 
 select * from final

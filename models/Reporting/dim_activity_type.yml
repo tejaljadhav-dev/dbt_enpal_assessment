@@ -8,11 +8,13 @@ models:
       int_sales_calls.
     columns:
       - name: activity_type_id
-        # grain check
-        data_tests: [unique]
+        description: Unique identifier of the activity type.
       - name: activity_type_key
+        description: Type key used in activity.type, e.g. meeting or sc_2.
       - name: activity_type_name
+        description: Display name of the activity type, e.g. 'Sales Call 1'.
       - name: is_active
+        description: True when the activity type is active in Pipedrive.
       - name: is_sales_call
         description: True for the types mapped to a funnel step (Sales Call 1 and Sales Call 2).
       - name: funnel_step

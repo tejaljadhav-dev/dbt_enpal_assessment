@@ -6,6 +6,7 @@
     )
 }}
 
+------ Start: Import CTEs ------
 with activity_types as (
 
     select * from {{ ref('stg_activity_types') }}
@@ -17,6 +18,10 @@ funnel_mapping as (
     select * from {{ ref('funnel_step_mapping') }}
 
 ),
+
+------ End: Import CTEs ------
+
+------ Start: Logic CTEs ------
 
 activity_steps as (
 
@@ -45,5 +50,8 @@ final as (
         on activity_types.activity_type_key = activity_steps.source_key
 
 )
+------ End: Logic CTEs ------
+
+------ Start: Final CTE ------
 
 select * from final

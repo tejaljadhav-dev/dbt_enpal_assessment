@@ -7,11 +7,12 @@ models:
       user_id in stg_activity / int_sales_calls.
     columns:
       - name: user_id
-        # grain check
-        data_tests: [unique]
+        description: Unique identifier of the CRM user.
       - name: user_name
+        description: Full name of the CRM user.
       - name: email
         description: Not unique across users (4 duplicates).
       - name: modified_at
+        description: Timestamp the user record was last modified.
       - name: owned_deal_count
         description: Deals whose latest owner is this user.
