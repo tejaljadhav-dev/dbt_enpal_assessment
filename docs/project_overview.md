@@ -4,7 +4,7 @@ dbt project that turns a Pipedrive CRM extract into `rep_sales_funnel_monthly`: 
 
 Output columns: `month`, `kpi_name`, `funnel_step`, `deals_count`.
 
-Findings and decisions are in [exploratory_analysis.md](exploratory_analysis.md). Model-level documentation (grain, columns, assumptions) is in the YAML file next to each model.
+The queries behind the findings are in [analyses/](../analyses/). Findings and decisions are in [exploratory_analysis.md](exploratory_analysis.md). Model-level documentation (grain, columns, assumptions) is in the YAML file next to each model.
 
 ## Run it
 
@@ -26,6 +26,7 @@ models/
   Staging/            views, one per raw table: rename, type, key (+ _sources.yml)
   Intermediate/       views, business logic
   Reporting/          tables, what BI reads
+analyses/             profiling queries behind the findings (dbt compile, then run)
 docs/                 project overview, exploratory analysis findings and decisions
 ```
 
