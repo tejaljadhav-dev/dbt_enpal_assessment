@@ -32,3 +32,7 @@
   &nbsp;&nbsp;&nbsp;Step 9: Renewal/Expansion
 5. Column names of the reporting model: `month`, `kpi_name`, `funnel_step`, `deals_count`
 6. “Git commit” all the changes and create a PR to your forked repo (not the original one). Send your repo link to us.
+
+## Solution documentation
+- [Project overview](docs/project_overview.md): how to run, structure, lineage, funnel mapping
+- [Exploratory analysis](docs/exploratory_analysis.md): data findings and decisions taken
