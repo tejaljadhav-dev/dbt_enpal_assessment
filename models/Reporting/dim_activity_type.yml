@@ -1,0 +1,23 @@
+version: 2
+
+models:
+  - name: dim_activity_type
+    description: >
+      Activity types with their funnel step where they have one. Grain: one row
+      per activity type. Joins to activity_type_key in stg_activity and
+      int_sales_calls.
+    columns:
+      - name: activity_type_id
+        description: Unique identifier of the activity type.
+      - name: activity_type_key
+        description: Type key used in activity.type, e.g. meeting or sc_2.
+      - name: activity_type_name
+        description: Display name of the activity type, e.g. 'Sales Call 1'.
+      - name: is_active
+        description: True when the activity type is active in Pipedrive.
+      - name: is_sales_call
+        description: True for the types mapped to a funnel step (Sales Call 1 and Sales Call 2).
+      - name: funnel_step
+        description: '2.1 or 3.1 for sales calls; null for follow-up and after-close calls.'
+      - name: kpi_name
+        description: Funnel step name for sales calls; null otherwise.

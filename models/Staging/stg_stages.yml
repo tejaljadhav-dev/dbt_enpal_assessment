@@ -1,0 +1,10 @@
+version: 2
+
+models:
+  - name: stg_stages
+    description: "Pipeline stages. Grain: one row per stage (single pipeline, stages 1-9)."
+    columns:
+      - name: stage_id
+        description: Unique identifier of the pipeline stage (1-9), referenced by deal_changes.new_value when changed_field_key = 'stage_id'.
+      - name: stage_name
+        description: Stage name as spelled in Pipedrive (e.g. "Qualified lead").

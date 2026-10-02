@@ -1,0 +1,18 @@
+version: 2
+
+models:
+  - name: dim_user
+    description: >
+      CRM users. Grain: one row per user. Joins to int_deals.owner_user_id and
+      user_id in stg_activity / int_sales_calls.
+    columns:
+      - name: user_id
+        description: Unique identifier of the CRM user.
+      - name: user_name
+        description: Full name of the CRM user.
+      - name: email
+        description: Not unique across users (4 duplicates).
+      - name: modified_at
+        description: Timestamp the user record was last modified.
+      - name: owned_deal_count
+        description: Deals whose latest owner is this user.

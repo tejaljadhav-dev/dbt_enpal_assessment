@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: stg_fields
+    description: >
+      Deal field metadata with option lists expanded from the source
+      field_value_options JSON. Grain: one row per field option
+      (field_key + option_id). Fields without options (add_time, user_id)
+      have a single row with null option columns. All fields belong to the
+      deal entity and match deal_changes.changed_field_key; option_id matches
+      deal_changes.new_value for enum fields (stage_id, lost_reason).
+      field_id and field_key repeat across option rows, and option ids restart
+      at 1 for every field, so field_option_id is the row key.
+    columns:
+      - name: field_option_id
+        description: Deterministic surrogate key over (field_key, option_id).
+      - name: field_id
+        description: Pipedrive field id (repeats once per option).
+      - name: field_key
+        description: API key of the field (add_time, user_id, stage_id, lost_reason).
+      - name: field_name
+        description: Display name, e.g. "Stage", "Lost reason".
+      - name: option_id
+        description: Option id as stored in deal_changes.new_value; null for fields without options.
+      - name: option_label
+        description: Option display label, e.g. "Pricing Issues"; null for fields without options.

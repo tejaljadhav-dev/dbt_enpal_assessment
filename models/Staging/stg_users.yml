@@ -1,0 +1,14 @@
+version: 2
+
+models:
+  - name: stg_users
+    description: "CRM users. Grain: one row per user. Email is not unique (4 duplicates), so it is not a key."
+    columns:
+      - name: user_id
+        description: Unique identifier of the CRM user; referenced by activity.user_id and by deal owner changes.
+      - name: user_name
+        description: Full name of the CRM user.
+      - name: email
+        description: Email address of the CRM user. Not unique across users (4 duplicates).
+      - name: modified_at
+        description: Last modification timestamp of the user record.

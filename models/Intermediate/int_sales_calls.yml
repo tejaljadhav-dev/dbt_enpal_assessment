@@ -1,0 +1,25 @@
+version: 2
+
+models:
+  - name: int_sales_calls
+    description: >
+      Completed sales calls. Grain: one row per completed (is_done = true)
+      activity whose type is mapped to a funnel step in funnel_step_mapping
+      (`meeting` = Sales Call 1, `sc_2` = Sales Call 2). Not-done activities
+      are excluded because the call did not take place. `called_at` is the
+      activity due timestamp, the only activity time in the source.
+    columns:
+      - name: activity_key
+        description: Unique key of the activity row (hash of activity_id, deal_id and type).
+      - name: activity_id
+        description: Pipedrive activity id (not unique in the source; see activity_key).
+      - name: deal_id
+        description: Pipedrive deal id the call belongs to.
+      - name: user_id
+        description: User who held the call.
+      - name: activity_type_key
+        description: meeting or sc_2, per funnel_step_mapping.
+      - name: activity_type_name
+        description: '"Sales Call 1" or "Sales Call 2".'
+      - name: called_at
+        description: Due timestamp of the call, used as the call date.

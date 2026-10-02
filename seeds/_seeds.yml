@@ -1,0 +1,30 @@
+version: 2
+
+seeds:
+  - name: funnel_step_mapping
+    description: >
+      Business mapping from Pipedrive source values to the reporting funnel.
+      Grain: one row per funnel step.
+      Stage steps (1-9) map 1:1 to `stages.stage_id`. Sales-call steps (2.1, 3.1)
+      map to `activity_types.type` values whose names in Pipedrive are literally
+      "Sales Call 1" (`meeting`) and "Sales Call 2" (`sc_2`). `follow_up` and
+      `after_close_call` activities are intentionally not part of the funnel.
+      kpi_name uses the assessment's funnel naming (Pipedrive spells stage 2
+      "Qualified lead").
+    config:
+      column_types:
+        funnel_step: varchar(10)
+        kpi_name: varchar(100)
+        source_type: varchar(20)
+        source_key: varchar(50)
+    columns:
+      - name: funnel_step
+        description: Funnel step label as text ('1', '2', '2.1', ... '9').
+      - name: kpi_name
+        description: Human-readable funnel step name.
+      - name: source_type
+        description: Which source event stream defines entry into the step.
+      - name: source_key
+        description: >
+          `stage_id` (as text) when source_type = 'stage';
+          `activity_types.type` when source_type = 'activity'.
