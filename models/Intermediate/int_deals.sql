@@ -37,27 +37,38 @@ fields as (
 
 ),
 
--- there is no deals table, so the deal entity is every deal_id seen in either
--- source. Most activity deal_ids have no change history at all.
-all_deals as (
+activity_summary as (
 
-    select deal_id from deal_changes
-    union
-    select deal_id from activity
+    select
+        deal_id                         as deal_id,
+        count(*)                        as activity_count
+    from activity
+    group by deal_id
 
 ),
 
-creation as (
+-- one grouped pass over the change log gives every deal it knows plus its
+-- creation facts. five deal_ids carry two add_time events (two lifecycles);
+-- the first is the creation date, lifecycle_count exposes the rest.
+change_summary as (
 
-    -- five deal_ids carry two add_time events (two lifecycles); the first one
-    -- is the creation date, lifecycle_count exposes the rest
     select
-        deal_id                         as deal_id,
-        min(changed_at)                 as created_at,
-        count(*)                        as lifecycle_count
+        deal_id                                                         as deal_id,
+        min(changed_at) filter (where changed_field_key = 'add_time')   as created_at,
+        count(*) filter (where changed_field_key = 'add_time')          as lifecycle_count
     from deal_changes
-    where changed_field_key = 'add_time'
     group by deal_id
+
+),
+
+-- there is no deals table, so the deal entity is every deal_id seen in either
+-- source. Most activity deal_ids have no change history at all.
+-- Built from the pre-aggregated summaries, not from the raw rows again.
+all_deals as (
+
+    select deal_id from change_summary
+    union
+    select deal_id from activity_summary
 
 ),
 
@@ -69,9 +80,10 @@ latest_values as (
         changed_field_key               as changed_field_key,
         new_value                       as new_value,
         changed_at                      as changed_at,
+        deal_change_id                  as deal_change_id,
         row_number() over (
             partition by deal_id, changed_field_key
-            order by changed_at desc
+            order by changed_at desc, deal_change_id desc
         )                               as recency_rank
     from deal_changes
     where changed_field_key in ('user_id', 'stage_id', 'lost_reason')
@@ -83,8 +95,8 @@ current_state as (
     -- pivot the latest values into one row per deal
     select
         deal_id                                                                         as deal_id,
-        max(case when changed_field_key = 'user_id' then cast(new_value as integer) end)   as owner_user_id,
-        max(case when changed_field_key = 'stage_id' then cast(new_value as integer) end)  as current_stage_id,
+        max(case when changed_field_key = 'user_id' then {{ safe_cast_integer('new_value') }} end)   as owner_user_id,
+        max(case when changed_field_key = 'stage_id' then {{ safe_cast_integer('new_value') }} end)  as current_stage_id,
         max(case when changed_field_key = 'lost_reason' then new_value end)                as lost_reason_id,
         max(case when changed_field_key = 'lost_reason' then changed_at end)               as lost_at
     from latest_values
@@ -102,16 +114,6 @@ stage_summary as (
         -- feeds the re-entry monitoring test
         count(*) filter (where stage_entry_number > 1)      as stage_reentry_count
     from stage_history
-    group by deal_id
-
-),
-
-activity_summary as (
-
-    select
-        deal_id                         as deal_id,
-        count(*)                        as activity_count
-    from activity
     group by deal_id
 
 ),
@@ -142,9 +144,9 @@ final as (
     select
         all_deals.deal_id                                           as deal_id,
         -- false for deals known only from activities: no stage, owner or creation data
-        creation.deal_id is not null                                as has_deal_history,
-        creation.created_at                                         as created_at,
-        coalesce(creation.lifecycle_count, 0)                       as lifecycle_count,
+        change_summary.deal_id is not null                           as has_deal_history,
+        change_summary.created_at                                         as created_at,
+        coalesce(change_summary.lifecycle_count, 0)                     as lifecycle_count,
         current_state.owner_user_id                                 as owner_user_id,
         current_state.current_stage_id                              as current_stage_id,
         stage_summary.furthest_stage_id                             as furthest_stage_id,
@@ -156,8 +158,8 @@ final as (
         coalesce(activity_summary.activity_count, 0)                as activity_count,
         coalesce(sales_call_summary.completed_sales_call_count, 0)  as completed_sales_call_count
     from all_deals
-    left join creation
-        on all_deals.deal_id = creation.deal_id
+    left join change_summary
+        on all_deals.deal_id = change_summary.deal_id
     left join current_state
         on all_deals.deal_id = current_state.deal_id
     left join stage_summary

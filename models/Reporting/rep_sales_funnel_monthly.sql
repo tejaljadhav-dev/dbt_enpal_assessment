@@ -26,9 +26,10 @@ monthly_counts as (
         -- first day of the month, as a date
         cast(date_trunc('month', event_at) as date)     as month,
         funnel_step                                     as funnel_step,
-        -- int_funnel_events is already one row per deal and step; distinct
-        -- guards against double counting if that ever changes
-        count(distinct deal_id)                         as deals_count
+        -- int_funnel_events is one row per deal and step (enforced by its grain
+        -- test), so counting rows equals counting distinct deals without the
+        -- extra sort/hash that count(distinct) needs on large volumes
+        count(*)                                        as deals_count
     from funnel_events
     group by 1, 2
 

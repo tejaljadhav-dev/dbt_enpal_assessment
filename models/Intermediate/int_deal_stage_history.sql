@@ -25,7 +25,8 @@ stage_changes as (
     select
         deal_change_id                  as deal_change_id,
         deal_id                         as deal_id,
-        cast(new_value as integer)      as stage_id,
+        -- null (not an error) if new_value is not a valid id; the not_null test flags it
+        {{ safe_cast_integer('new_value') }} as stage_id,
         changed_at                      as entered_at
     from deal_changes
     where changed_field_key = 'stage_id'
