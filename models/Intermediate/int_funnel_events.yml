@@ -9,7 +9,9 @@ models:
       Sources:
         - Steps 1-9 come from stage changes (int_deal_stage_history), matched
           via funnel_step_mapping on stage_id. Lead Generation uses the stage 1
-          change, not the deal's add_time.
+          change, not the deal's add_time, so all stage steps share one event
+          definition. add_time precedes stage 1 by 2-83 days (median 35), so
+          using it would shift most deals into an earlier month; totals match.
         - Steps 2.1 and 3.1 come from completed sales calls (int_sales_calls).
 
       Rules:
