@@ -1,3 +1,11 @@
+-- Materialized as a view: unnesting the option JSON of 4 source rows is
+-- trivial, so there is nothing to gain from storing the result.
+{{
+    config(
+        materialized = 'view'
+    )
+}}
+
 with source as (
 
     select * from {{ source('pipedrive', 'fields') }}

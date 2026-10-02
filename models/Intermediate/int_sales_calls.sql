@@ -1,3 +1,11 @@
+-- Materialized as a view: a filter and two small joins over ~4.6k activities;
+-- only feeds int_funnel_events.
+{{
+    config(
+        materialized = 'view'
+    )
+}}
+
 with activity as (
 
     select * from {{ ref('stg_activity') }}

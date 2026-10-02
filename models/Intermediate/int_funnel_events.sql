@@ -1,3 +1,12 @@
+-- Materialized as a view rather than ephemeral: it holds the funnel business
+-- logic, so keeping it queryable in the database makes it easy to inspect
+-- and debug individual deals. Small enough that a table is not needed.
+{{
+    config(
+        materialized = 'view'
+    )
+}}
+
 with stage_history as (
 
     select * from {{ ref('int_deal_stage_history') }}

@@ -1,3 +1,12 @@
+-- Materialized as a view: window functions over ~9k stage changes are cheap
+-- and the model only feeds int_funnel_events. Switch to a table if deal
+-- volumes grow or other models start reading it heavily.
+{{
+    config(
+        materialized = 'view'
+    )
+}}
+
 with deal_changes as (
 
     select * from {{ ref('stg_deal_changes') }}

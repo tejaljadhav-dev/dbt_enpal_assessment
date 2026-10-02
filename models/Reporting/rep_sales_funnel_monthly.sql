@@ -1,3 +1,12 @@
+-- Materialized as a table: this is the model BI tools and analysts query, so
+-- the whole chain of views is computed once per dbt run instead of on
+-- every read.
+{{
+    config(
+        materialized = 'table'
+    )
+}}
+
 with funnel_events as (
 
     select * from {{ ref('int_funnel_events') }}
